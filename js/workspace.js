@@ -41,10 +41,14 @@ function WSpace($workspace, factory) {
             if (!$placement.length) throw 'illegal argument';
         }
         model = model || clone(factory.Defaults.table);
+        function onTableRemoveClick($table) {
+            self.removeTable($table);
+        }
         function onDrag(event, ui) {
             model.properties.position = ui.position;
         }
-        var $table = factory.createTable(model.properties.size);
+        var $table = factory.createTable(model.properties.size, 
+            onTableRemoveClick);
         $table.data('model', model);
         $table.draggable({
             containment : $placement,
@@ -57,7 +61,7 @@ function WSpace($workspace, factory) {
     }
 
     this.removeTable = function($table) {
-        if ($table.hasClass('table')) {
+        if ($table.hasClass('table-container')) {
             return $table.detach();
         } else {
             throw 'illegal argument';
@@ -69,7 +73,8 @@ function WSpace($workspace, factory) {
         $workspace.children().each(function() {
             $placement = $(this);
             var placement = $placement.data('model');
-            $placement.find('.table').each(function() {
+            placement.tables = [];
+            $placement.find('.table-container').each(function() {
                 placement.tables.push($(this).data('model'));
             });
             placements.push(placement);
@@ -119,15 +124,30 @@ var PlacementFactory = {
     }
 };
 
-PlacementFactory.createTable = function(size) {
+PlacementFactory.createTable = function(size, onRemoveClick) {
+    var $container = $('<div class="table-container"/>');
+    var $toolbar = $('<div class="table-toolbar"/>');
+
     var $table = $('<div class="table"/>')
         .css(size);
-    return $table;
+
+    var $removeButton = $('<button>Remove</button>');
+    $removeButton.on('click', function() {
+        onRemoveClick($container);
+    });
+    $toolbar.append($removeButton);
+
+    $container.append($toolbar).append($table);
+
+    return $container;
 }
 
 PlacementFactory.createPlacement = function(size, onTableAddClick, onRemoveClick) {
     var $container = $('<div class="placement-container"/>');
     var $toolbar = $('<div class="placement-toolbar"/>');
+
+    var $placement = $('<div class="placement"/>')
+        .css(size);
 
     var $addButton = $('<button>Add</button>');
     $addButton.on('click', function() {
@@ -163,8 +183,7 @@ PlacementFactory.createPlacement = function(size, onTableAddClick, onRemoveClick
     });
     $toolbar.append($removeButton);   
 
-    var $placement = $('<div class="placement"/>')
-        .css(size);
     $container.append($toolbar).append($placement);
+
     return $container;
 }

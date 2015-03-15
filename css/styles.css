@@ -11,12 +11,15 @@
     width: 64px;
 }
 
+.table-container {
+    position: absolute !important;
+}
+
 .placement {
     position: relative;
     border: 2px solid black;
 }
 
 .table {
-    position: absolute !important;
     border: 1px solid red;
 }

@@ -1,0 +1,22 @@
+#workspace {
+    height: 100%;
+    width: 100%;
+}
+
+.placement-container {
+    margin: 2em;
+}
+
+.placement-toolbar > input {
+    width: 64px;
+}
+
+.placement {
+    position: relative;
+    border: 2px solid black;
+}
+
+.table {
+    position: absolute !important;
+    border: 1px solid red;
+}
